@@ -1,9 +1,20 @@
-import { store } from "@/store";
+import { store, useAppDispatch } from "@/store";
+import { loadFavorites } from "@/store/moviesSlice";
 import { ClerkProvider } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
+import React, { useEffect } from "react";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { Provider } from "react-redux";
 import InitialLayout from "./components/InitialLayout";
+
+function Bootstrap() {
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    console.log("Loading favorites on app start");
+    dispatch(loadFavorites());
+  }, [dispatch]);
+  return <InitialLayout />;
+}
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
@@ -17,7 +28,7 @@ export default function RootLayout() {
       <Provider store={store}>
         <SafeAreaProvider>
           <SafeAreaView style={{ flex: 1, backgroundColor: "#000" }}>
-            <InitialLayout />
+            <Bootstrap />
           </SafeAreaView>
         </SafeAreaProvider>
       </Provider>

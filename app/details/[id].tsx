@@ -39,7 +39,7 @@ export default function MovieDetails() {
     return () => {
       ignore = true;
     };
-  }, [movieId]);
+  }, [movieId, movie, dispatch]);
 
   if (loading) return <ActivityIndicator style={{ marginTop: 40 }} />;
   if (error) return <Text style={homeStyles.errorText}>{error}</Text>;

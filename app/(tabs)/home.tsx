@@ -1,3 +1,4 @@
+import MovieCard from "@/components/MovieCard";
 import { COLORS } from "@/constants/theme";
 import { credentialsPresent, getTrendingMovies } from "@/lib/tmdb";
 import { useAppDispatch, useAppSelector } from "@/store";
@@ -13,7 +14,6 @@ import { useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import React, { useCallback, useEffect } from "react";
 import { FlatList, RefreshControl, Text, View } from "react-native";
-import MovieCard from "../../components/MovieCard";
 
 const HomeScreen = () => {
   const { user } = useUser();
@@ -42,7 +42,7 @@ const HomeScreen = () => {
     } finally {
       setRefreshing(false);
     }
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     fetchMovies();
@@ -84,8 +84,8 @@ const HomeScreen = () => {
       <View style={homeStyles.header}>
         <View style={homeStyles.headerRow}>
           <View>
-            <Text style={homeStyles.greeting}>Hi {displayName}</Text>
-            <Text style={homeStyles.subGreeting}>Trending Movies</Text>
+            <Text style={homeStyles.greeting}>Hi {displayName}!</Text>
+            <Text style={homeStyles.subGreeting}>Welcome to StreamBox</Text>
           </View>
           <View style={homeStyles.avatar}>
             <Text style={homeStyles.avatarText}>{avatarInitial}</Text>
