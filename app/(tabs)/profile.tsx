@@ -1,12 +1,14 @@
-import { COLORS } from "@/constants/theme";
+import { useTheme } from "@/contexts/ThemeContext";
 import { homeStyles } from "@/styles/home.styles";
 import { useAuth, useUser } from "@clerk/clerk-expo";
+import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { Text, View } from "react-native";
+import { Switch, Text, TouchableOpacity, View } from "react-native";
 
 export default function Profile() {
   const { user } = useUser();
   const { signOut } = useAuth();
+  const { colors, toggleTheme, isDark } = useTheme();
 
   const deriveNameFromEmail = (email?: string | null) => {
     if (!email) return undefined;
@@ -36,40 +38,95 @@ export default function Profile() {
       </View>
 
       <View style={{ marginTop: 24, gap: 16 }}>
+        <TouchableOpacity
+          style={{
+            backgroundColor: colors.cardBackground,
+            padding: 16,
+            borderRadius: 16,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            borderWidth: 1,
+            borderColor: colors.surfaceLight,
+          }}
+          onPress={toggleTheme}
+          activeOpacity={0.7}
+        >
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+            <Ionicons
+              name={isDark ? "moon" : "sunny"}
+              size={20}
+              color={colors.primary}
+            />
+            <View>
+              <Text
+                style={{
+                  color: colors.text,
+                  fontWeight: "600",
+                  marginBottom: 2,
+                }}
+              >
+                Theme
+              </Text>
+              <Text style={{ color: colors.textSecondary, fontSize: 12 }}>
+                {isDark ? "Dark Mode" : "Light Mode"}
+              </Text>
+            </View>
+          </View>
+          <Switch
+            value={isDark}
+            onValueChange={toggleTheme}
+            trackColor={{ false: "#D1D5DB", true: colors.primary }}
+            thumbColor="#FFFFFF"
+          />
+        </TouchableOpacity>
+
         <View
-          style={{ backgroundColor: "#111", padding: 16, borderRadius: 16 }}
+          style={{
+            backgroundColor: colors.cardBackground,
+            padding: 16,
+            borderRadius: 16,
+            borderWidth: 1,
+            borderColor: colors.surfaceLight,
+          }}
         >
           <Text
             style={{
-              color: COLORS.surface,
+              color: colors.text,
               fontWeight: "600",
               marginBottom: 4,
             }}
           >
             Email
           </Text>
-          <Text style={{ color: COLORS.grey }}>
+          <Text style={{ color: colors.textSecondary }}>
             {user?.primaryEmailAddress?.emailAddress || "N/A"}
           </Text>
         </View>
         <View
-          style={{ backgroundColor: "#111", padding: 16, borderRadius: 16 }}
+          style={{
+            backgroundColor: colors.cardBackground,
+            padding: 16,
+            borderRadius: 16,
+            borderWidth: 1,
+            borderColor: colors.surfaceLight,
+          }}
         >
           <Text
             style={{
-              color: COLORS.surface,
+              color: colors.text,
               fontWeight: "600",
               marginBottom: 4,
             }}
           >
             Username
           </Text>
-          <Text style={{ color: COLORS.grey }}>{displayName}</Text>
+          <Text style={{ color: colors.textSecondary }}>{displayName}</Text>
         </View>
         <Text
           onPress={() => signOut()}
           style={{
-            color: COLORS.primary,
+            color: colors.primary,
             fontWeight: "700",
             textAlign: "center",
             marginTop: 20,

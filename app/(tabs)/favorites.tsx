@@ -1,7 +1,8 @@
 import MovieCard from "@/components/MovieCard";
+import { useTheme } from "@/contexts/ThemeContext";
+import { useDynamicStyles } from "@/hooks/useDynamicStyles";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { toggleFavorite } from "@/store/moviesSlice";
-import { homeStyles } from "@/styles/home.styles";
 import type { MovieItem } from "@/types/movies";
 import { useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
@@ -12,6 +13,8 @@ export default function Favorites() {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const { user } = useUser();
+  const { colors } = useTheme();
+  const homeStyles = useDynamicStyles();
   const favorites = useAppSelector((s) => s.movies.favorites);
   const movies = useAppSelector((s) =>
     s.movies.trending.filter((m: MovieItem) => favorites.includes(m.id))
@@ -47,7 +50,7 @@ export default function Favorites() {
       >
         <Text
           style={{
-            color: "#fff",
+            color: colors.text,
             fontSize: 20,
             fontWeight: "700",
             marginBottom: 12,
@@ -57,7 +60,7 @@ export default function Favorites() {
         </Text>
         <Text
           style={{
-            color: "#888",
+            color: colors.textSecondary,
             textAlign: "center",
             maxWidth: 260,
             lineHeight: 18,
@@ -105,7 +108,7 @@ export default function Favorites() {
             >
               <Text
                 style={{
-                  color: "#FFF",
+                  color: colors.text,
                   fontSize: 11,
                   fontWeight: "600",
                   letterSpacing: 0.5,

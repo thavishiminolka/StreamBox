@@ -1,3 +1,4 @@
+import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
 import { store, useAppDispatch } from "@/store";
 import { loadFavorites } from "@/store/moviesSlice";
 import { ClerkProvider } from "@clerk/clerk-expo";
@@ -16,6 +17,15 @@ function Bootstrap() {
   return <InitialLayout />;
 }
 
+function ThemedApp() {
+  const { colors } = useTheme();
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+      <Bootstrap />
+    </SafeAreaView>
+  );
+}
+
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 if (!publishableKey) {
@@ -26,11 +36,11 @@ export default function RootLayout() {
   return (
     <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
       <Provider store={store}>
-        <SafeAreaProvider>
-          <SafeAreaView style={{ flex: 1, backgroundColor: "#000" }}>
-            <Bootstrap />
-          </SafeAreaView>
-        </SafeAreaProvider>
+        <ThemeProvider>
+          <SafeAreaProvider>
+            <ThemedApp />
+          </SafeAreaProvider>
+        </ThemeProvider>
       </Provider>
     </ClerkProvider>
   );

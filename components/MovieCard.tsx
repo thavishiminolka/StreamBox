@@ -1,6 +1,7 @@
+import { useTheme } from "@/contexts/ThemeContext";
+import { useDynamicStyles } from "@/hooks/useDynamicStyles";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { toggleFavorite } from "@/store/moviesSlice";
-import { homeStyles } from "@/styles/home.styles";
 import type { MovieItem } from "@/types/movies";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
@@ -11,17 +12,20 @@ interface Props {
   onPress?: (item: MovieItem) => void;
 }
 
-const getStatus = (item: MovieItem): { label: string; style: any } => {
-  const today = new Date();
-  const release = item.release_date ? new Date(item.release_date) : null;
-  if (release && release > today)
-    return { label: "Upcoming", style: homeStyles.statusUpcoming };
-  if ((item.vote_count || 0) > 1000)
-    return { label: "Popular", style: homeStyles.statusPopular };
-  return { label: "Active", style: homeStyles.statusActive };
-};
-
 const MovieCard: React.FC<Props> = ({ item, onPress }) => {
+  const { colors } = useTheme();
+  const homeStyles = useDynamicStyles();
+
+  const getStatus = (item: MovieItem): { label: string; style: any } => {
+    const today = new Date();
+    const release = item.release_date ? new Date(item.release_date) : null;
+    if (release && release > today)
+      return { label: "Upcoming", style: homeStyles.statusUpcoming };
+    if ((item.vote_count || 0) > 1000)
+      return { label: "Popular", style: homeStyles.statusPopular };
+    return { label: "Active", style: homeStyles.statusActive };
+  };
+
   const status = getStatus(item);
   const overview = item.overview
     ? item.overview.slice(0, 120) + (item.overview.length > 120 ? "…" : "")
@@ -49,7 +53,9 @@ const MovieCard: React.FC<Props> = ({ item, onPress }) => {
             { alignItems: "center", justifyContent: "center" },
           ]}
         >
-          <Text style={{ color: "#666", fontSize: 10 }}>No Image</Text>
+          <Text style={{ color: colors.textSecondary, fontSize: 10 }}>
+            No Image
+          </Text>
         </View>
       )}
       <TouchableOpacity

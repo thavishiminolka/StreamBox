@@ -1,13 +1,16 @@
+import { useTheme } from "@/contexts/ThemeContext";
+import { useDynamicStyles } from "@/hooks/useDynamicStyles";
 import { getMovieDetails } from "@/lib/tmdb";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { upsertMovie } from "@/store/moviesSlice";
-import { homeStyles } from "@/styles/home.styles";
 import type { MovieItem } from "@/types/movies";
 import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Image, ScrollView, Text } from "react-native";
 
 export default function MovieDetails() {
+  const { colors } = useTheme();
+  const homeStyles = useDynamicStyles();
   const { id } = useLocalSearchParams();
   const movieId = Number(id);
   const dispatch = useAppDispatch();
@@ -51,7 +54,7 @@ export default function MovieDetails() {
 
   return (
     <ScrollView
-      style={{ flex: 1, backgroundColor: "#000", padding: 16 }}
+      style={{ flex: 1, backgroundColor: colors.background, padding: 16 }}
       contentContainerStyle={{ paddingBottom: 40 }}
     >
       {imageUri && (
@@ -70,18 +73,18 @@ export default function MovieDetails() {
         style={{
           fontSize: 24,
           fontWeight: "700",
-          color: "#fff",
+          color: colors.text,
           marginBottom: 12,
         }}
       >
         {movie.title}
       </Text>
       {movie.release_date && (
-        <Text style={{ color: "#888", marginBottom: 8 }}>
+        <Text style={{ color: colors.textSecondary, marginBottom: 8 }}>
           Release: {movie.release_date}
         </Text>
       )}
-      <Text style={{ color: "#ccc", lineHeight: 20 }}>
+      <Text style={{ color: colors.textSecondary, lineHeight: 20 }}>
         {movie.overview || "No overview available."}
       </Text>
     </ScrollView>

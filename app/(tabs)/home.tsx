@@ -1,4 +1,5 @@
-import { COLORS } from "@/constants/theme";
+import { useTheme } from "@/contexts/ThemeContext";
+import { useDynamicStyles } from "@/hooks/useDynamicStyles";
 import { credentialsPresent, getTrendingMovies } from "@/lib/tmdb";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
@@ -7,7 +8,6 @@ import {
   setStatus,
   setTrending,
 } from "@/store/moviesSlice";
-import { homeStyles } from "@/styles/home.styles";
 import type { MovieItem } from "@/types/movies";
 import { useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
@@ -25,6 +25,8 @@ const HomeScreen = () => {
   const { user } = useUser();
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const { colors } = useTheme();
+  const homeStyles = useDynamicStyles();
   const movies = useAppSelector((s) => s.movies.trending);
   const loading = useAppSelector((s) => s.movies.status === "loading");
   const error = useAppSelector((s) => s.movies.error);
@@ -122,7 +124,7 @@ const HomeScreen = () => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={COLORS.primary}
+            tintColor={colors.primary}
           />
         }
         showsVerticalScrollIndicator={false}
