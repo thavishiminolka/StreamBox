@@ -51,7 +51,7 @@ export default function Login() {
       });
       if (result.status === "complete" && setActive) {
         await setActive({ session: result.createdSessionId });
-        router.replace("/home");
+        router.replace("/(tabs)/home");
       }
     } catch (err: any) {
       setErrors({ general: err?.errors?.[0]?.message || "Login failed" });
@@ -67,7 +67,7 @@ export default function Login() {
       });
       if (setActive && createdSessionId) {
         setActive({ session: createdSessionId });
-        router.replace("/home");
+        router.replace("/(tabs)/home");
       }
     } catch (error) {
       console.error("OAuth error:", error);
