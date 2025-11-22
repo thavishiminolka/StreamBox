@@ -21,6 +21,9 @@ interface Colors {
   cardBackground: string;
   text: string;
   textSecondary: string;
+  tabBarBackground: string;
+  chipTextColor: string;
+  avatarTextColor: string;
 }
 
 interface ThemeContextType {

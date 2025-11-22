@@ -1,13 +1,14 @@
-import { COLORS } from "@/constants/theme";
-import { styles } from "@/styles/auth.styles";
+import { useTheme } from "@/contexts/ThemeContext";
+import { useAuthStyles } from "@/styles/auth.styles";
 import { useSSO, useSignUp } from "@clerk/clerk-expo";
-import { Ionicons } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   Image,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
@@ -18,9 +19,12 @@ export default function Register() {
   const { startSSOFlow } = useSSO();
   const { signUp, setActive, isLoaded } = useSignUp();
   const router = useRouter();
+  const { colors } = useTheme();
+  const styles = useAuthStyles();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [code, setCode] = useState("");
   const [step, setStep] = useState<"form" | "verify">("form");
   const [loading, setLoading] = useState(false);
@@ -101,149 +105,257 @@ export default function Register() {
   const isVerify = step === "verify";
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-    >
-      <View style={[styles.brandSection, isVerify && styles.verifyBrandAdjust]}>
-        <Text style={styles.appName}>STREAMBOX</Text>
-        <Text style={styles.tagline}>
-          {isVerify
-            ? "Enter verification code."
-            : "Create your account to begin."}
-        </Text>
-      </View>
-      <View
-        style={{
-          flex: 1,
-          paddingHorizontal: 24,
-          justifyContent: "space-between",
-        }}
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <KeyboardAvoidingView
+        style={[styles.container, { backgroundColor: colors.background }]}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
       >
-        <View>
-          <View style={[styles.illustrationContainer, { marginBottom: 24 }]}>
-            <Image
-              source={require("../../assets/images/image1.png")}
-              style={[
-                styles.illustration,
-                { width: 180, height: 180, maxHeight: 180 },
-              ]}
-              resizeMode="cover"
-            />
+        <ScrollView
+          contentContainerStyle={{
+            flexGrow: 1,
+            backgroundColor: colors.background,
+          }}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          style={{ backgroundColor: colors.background }}
+        >
+          <View
+            style={[styles.brandSection, isVerify && styles.verifyBrandAdjust]}
+          >
+            <Text style={styles.appName}>STREAMBOX</Text>
+            <Text style={[styles.tagline, { color: colors.textSecondary }]}>
+              {isVerify
+                ? "Enter verification code."
+                : "Create your account to begin."}
+            </Text>
           </View>
-          <View style={styles.loginSection}>
-            {isVerify ? (
-              <View style={styles.formContainer}>
-                <Text style={styles.inputLabel}>Verification Code</Text>
-                <TextInput
-                  value={code}
-                  onChangeText={setCode}
-                  placeholder="123456"
-                  placeholderTextColor={COLORS.grey}
-                  style={[styles.input, styles.codeInput]}
-                  keyboardType="number-pad"
-                  maxLength={6}
-                  returnKeyType="done"
+          <View
+            style={{
+              flex: 1,
+              paddingHorizontal: 24,
+              justifyContent: "space-between",
+              paddingBottom: 20,
+            }}
+          >
+            <View>
+              <View
+                style={[styles.illustrationContainer, { marginBottom: 24 }]}
+              >
+                <Image
+                  source={require("../../assets/images/image1.png")}
+                  style={[
+                    styles.illustration,
+                    { width: 180, height: 180, maxHeight: 180 },
+                  ]}
+                  resizeMode="cover"
                 />
-                {errors.code && (
-                  <Text style={styles.errorText}>{errors.code}</Text>
+              </View>
+              <View style={styles.loginSection}>
+                {isVerify ? (
+                  <View style={styles.formContainer}>
+                    <Text style={[styles.inputLabel, { color: colors.text }]}>
+                      Verification Code
+                    </Text>
+                    <TextInput
+                      value={code}
+                      onChangeText={setCode}
+                      placeholder="123456"
+                      placeholderTextColor={colors.grey}
+                      style={[
+                        styles.input,
+                        styles.codeInput,
+                        {
+                          backgroundColor: colors.cardBackground,
+                          color: colors.text,
+                        },
+                      ]}
+                      keyboardType="number-pad"
+                      maxLength={6}
+                      returnKeyType="done"
+                    />
+                    {errors.code && (
+                      <Text style={styles.errorText}>{errors.code}</Text>
+                    )}
+                    {errors.general && (
+                      <Text style={styles.errorText}>{errors.general}</Text>
+                    )}
+                    <TouchableOpacity
+                      onPress={verifyCode}
+                      disabled={verifying}
+                      style={[
+                        styles.primaryButton,
+                        verifying && styles.primaryButtonDisabled,
+                      ]}
+                      activeOpacity={0.85}
+                    >
+                      <Text style={styles.primaryButtonText}>
+                        {verifying ? "Verifying..." : "Confirm Account"}
+                      </Text>
+                    </TouchableOpacity>
+                    <View style={styles.linkRow}>
+                      <Text
+                        style={[
+                          styles.termsText,
+                          { color: colors.textSecondary },
+                        ]}
+                      >
+                        Need to edit email?
+                      </Text>
+                      <TouchableOpacity onPress={() => setStep("form")}>
+                        <Text style={styles.linkText}>Go Back</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ) : (
+                  <View style={styles.formContainer}>
+                    <View>
+                      <Text style={[styles.inputLabel, { color: colors.text }]}>
+                        Email
+                      </Text>
+                      <TextInput
+                        autoCapitalize="none"
+                        keyboardType="email-address"
+                        value={email}
+                        onChangeText={setEmail}
+                        placeholder="you@example.com"
+                        placeholderTextColor={colors.grey}
+                        style={[
+                          styles.input,
+                          {
+                            backgroundColor: colors.cardBackground,
+                            color: colors.text,
+                          },
+                        ]}
+                        returnKeyType="next"
+                      />
+                      {errors.email && (
+                        <Text style={styles.errorText}>{errors.email}</Text>
+                      )}
+                    </View>
+                    <View>
+                      <Text style={[styles.inputLabel, { color: colors.text }]}>
+                        Password
+                      </Text>
+                      <View style={{ position: "relative" }}>
+                        <TextInput
+                          secureTextEntry={!showPassword}
+                          value={password}
+                          onChangeText={setPassword}
+                          placeholder="••••••"
+                          placeholderTextColor={colors.grey}
+                          style={[
+                            styles.input,
+                            {
+                              backgroundColor: colors.cardBackground,
+                              color: colors.text,
+                              paddingRight: 45,
+                            },
+                          ]}
+                          returnKeyType="done"
+                        />
+                        <TouchableOpacity
+                          onPress={() => setShowPassword(!showPassword)}
+                          style={{
+                            position: "absolute",
+                            right: 14,
+                            top: 14,
+                            padding: 4,
+                          }}
+                          activeOpacity={0.7}
+                        >
+                          <Feather
+                            name={showPassword ? "eye-off" : "eye"}
+                            size={18}
+                            color={colors.grey}
+                          />
+                        </TouchableOpacity>
+                      </View>
+                      {errors.password && (
+                        <Text style={styles.errorText}>{errors.password}</Text>
+                      )}
+                    </View>
+                    {errors.general && (
+                      <Text style={styles.errorText}>{errors.general}</Text>
+                    )}
+                    <TouchableOpacity
+                      onPress={startEmailRegistration}
+                      disabled={loading}
+                      style={[
+                        styles.primaryButton,
+                        loading && styles.primaryButtonDisabled,
+                      ]}
+                      activeOpacity={0.85}
+                    >
+                      <Text style={styles.primaryButtonText}>
+                        {loading ? "Sending code..." : "Register"}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
                 )}
-                {errors.general && (
-                  <Text style={styles.errorText}>{errors.general}</Text>
-                )}
-                <TouchableOpacity
-                  onPress={verifyCode}
-                  disabled={verifying}
-                  style={[
-                    styles.primaryButton,
-                    verifying && styles.primaryButtonDisabled,
-                  ]}
-                  activeOpacity={0.85}
+                <Text
+                  style={[styles.dividerText, { color: colors.textSecondary }]}
                 >
-                  <Text style={styles.primaryButtonText}>
-                    {verifying ? "Verifying..." : "Confirm Account"}
+                  or
+                </Text>
+                <TouchableOpacity
+                  style={[
+                    styles.googleButton,
+                    {
+                      backgroundColor:
+                        colors.surface === "#000000"
+                          ? "#FFFFFF"
+                          : colors.cardBackground,
+                    },
+                  ]}
+                  onPress={handleGoogleSignIn}
+                  activeOpacity={0.9}
+                >
+                  <View style={styles.googleIconContainer}>
+                    <Feather
+                      name="mail"
+                      size={20}
+                      color={
+                        colors.surface === "#000000" ? "#1A1A1A" : colors.text
+                      }
+                    />
+                  </View>
+                  <Text
+                    style={[
+                      styles.googleButtonText,
+                      {
+                        color:
+                          colors.surface === "#000000"
+                            ? "#1A1A1A"
+                            : colors.text,
+                      },
+                    ]}
+                  >
+                    Continue with Google
                   </Text>
                 </TouchableOpacity>
-                <View style={styles.linkRow}>
-                  <Text style={styles.termsText}>Need to edit email?</Text>
-                  <TouchableOpacity onPress={() => setStep("form")}>
-                    <Text style={styles.linkText}>Go Back</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            ) : (
-              <View style={styles.formContainer}>
-                <View>
-                  <Text style={styles.inputLabel}>Email</Text>
-                  <TextInput
-                    autoCapitalize="none"
-                    keyboardType="email-address"
-                    value={email}
-                    onChangeText={setEmail}
-                    placeholder="you@example.com"
-                    placeholderTextColor={COLORS.grey}
-                    style={styles.input}
-                    returnKeyType="next"
-                  />
-                  {errors.email && (
-                    <Text style={styles.errorText}>{errors.email}</Text>
-                  )}
-                </View>
-                <View>
-                  <Text style={styles.inputLabel}>Password</Text>
-                  <TextInput
-                    secureTextEntry
-                    value={password}
-                    onChangeText={setPassword}
-                    placeholder="••••••"
-                    placeholderTextColor={COLORS.grey}
-                    style={styles.input}
-                    returnKeyType="done"
-                  />
-                  {errors.password && (
-                    <Text style={styles.errorText}>{errors.password}</Text>
-                  )}
-                </View>
-                {errors.general && (
-                  <Text style={styles.errorText}>{errors.general}</Text>
+                {!isVerify && (
+                  <View style={styles.linkRow}>
+                    <Text
+                      style={[
+                        styles.termsText,
+                        { color: colors.textSecondary },
+                      ]}
+                    >
+                      Already have an account?
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => router.push("/(auth)/login")}
+                    >
+                      <Text style={styles.linkText}>Sign In</Text>
+                    </TouchableOpacity>
+                  </View>
                 )}
-                <TouchableOpacity
-                  onPress={startEmailRegistration}
-                  disabled={loading}
-                  style={[
-                    styles.primaryButton,
-                    loading && styles.primaryButtonDisabled,
-                  ]}
-                  activeOpacity={0.85}
-                >
-                  <Text style={styles.primaryButtonText}>
-                    {loading ? "Sending code..." : "Register"}
-                  </Text>
-                </TouchableOpacity>
               </View>
-            )}
-            <Text style={styles.dividerText}>or</Text>
-            <TouchableOpacity
-              style={styles.googleButton}
-              onPress={handleGoogleSignIn}
-              activeOpacity={0.9}
-            >
-              <View style={styles.googleIconContainer}>
-                <Ionicons name="logo-google" size={20} color="#1A1A1A" />
-              </View>
-              <Text style={styles.googleButtonText}>Continue with Google</Text>
-            </TouchableOpacity>
-            {!isVerify && (
-              <View style={styles.linkRow}>
-                <Text style={styles.termsText}>Already have an account?</Text>
-                <TouchableOpacity onPress={() => router.push("/(auth)/login")}>
-                  <Text style={styles.linkText}>Sign In</Text>
-                </TouchableOpacity>
-              </View>
-            )}
+            </View>
           </View>
-        </View>
-      </View>
-    </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </View>
   );
 }

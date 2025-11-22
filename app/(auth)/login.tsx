@@ -1,13 +1,14 @@
-import { COLORS } from "@/constants/theme";
-import { styles } from "@/styles/auth.styles";
+import { useTheme } from "@/contexts/ThemeContext";
+import { useAuthStyles } from "@/styles/auth.styles";
 import { useSSO, useSignIn } from "@clerk/clerk-expo";
-import { Ionicons } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   Image,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
@@ -18,9 +19,12 @@ export default function Login() {
   const { startSSOFlow } = useSSO();
   const { signIn, setActive, isLoaded } = useSignIn();
   const router = useRouter();
+  const { colors } = useTheme();
+  const styles = useAuthStyles();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loadingEmail, setLoadingEmail] = useState(false);
   const [errors, setErrors] = useState<{
     email?: string;
@@ -75,116 +79,203 @@ export default function Login() {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-    >
-      {/* BRAND SECTION */}
-      <View style={styles.brandSection}>
-        <Text style={styles.appName}>STREAMBOX</Text>
-        <Text style={styles.tagline}>
-          Sign in to continue your cinematic journey.
-        </Text>
-      </View>
-
-      {/* BODY WRAPPER */}
-      <View
-        style={{
-          flex: 1,
-          paddingHorizontal: 24,
-          justifyContent: "space-between",
-        }}
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <KeyboardAvoidingView
+        style={[styles.container, { backgroundColor: colors.background }]}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
       >
-        {/* FORM + OAUTH */}
-        <View>
-          {/* ILLUSTRATION (smaller) */}
-          <View style={[styles.illustrationContainer, { marginBottom: 24 }]}>
-            <Image
-              source={require("../../assets/images/image1.png")}
-              style={[
-                styles.illustration,
-                { width: 180, height: 180, maxHeight: 180 },
-              ]}
-              resizeMode="cover"
-            />
+        <ScrollView
+          contentContainerStyle={{
+            flexGrow: 1,
+            backgroundColor: colors.background,
+          }}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          style={{ backgroundColor: colors.background }}
+        >
+          {/* BRAND SECTION */}
+          <View style={styles.brandSection}>
+            <Text style={styles.appName}>STREAMBOX</Text>
+            <Text style={[styles.tagline, { color: colors.textSecondary }]}>
+              Sign in to continue your cinematic journey.
+            </Text>
           </View>
-          <View style={styles.loginSection}>
-            {/* EMAIL LOGIN FORM */}
-            <View style={styles.formContainer}>
-              <View>
-                <Text style={styles.inputLabel}>Email</Text>
-                <TextInput
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                  value={email}
-                  onChangeText={setEmail}
-                  placeholder="you@example.com"
-                  placeholderTextColor={COLORS.grey}
-                  style={styles.input}
-                  returnKeyType="next"
-                />
-                {errors.email && (
-                  <Text style={styles.errorText}>{errors.email}</Text>
-                )}
-              </View>
-              <View>
-                <Text style={styles.inputLabel}>Password</Text>
-                <TextInput
-                  secureTextEntry
-                  value={password}
-                  onChangeText={setPassword}
-                  placeholder="••••••"
-                  placeholderTextColor={COLORS.grey}
-                  style={styles.input}
-                  returnKeyType="done"
-                />
-                {errors.password && (
-                  <Text style={styles.errorText}>{errors.password}</Text>
-                )}
-              </View>
-              {errors.general && (
-                <Text style={styles.errorText}>{errors.general}</Text>
-              )}
-              <TouchableOpacity
-                onPress={handleEmailLogin}
-                disabled={loadingEmail}
-                style={[
-                  styles.primaryButton,
-                  loadingEmail && styles.primaryButtonDisabled,
-                ]}
-                activeOpacity={0.85}
+
+          {/* BODY WRAPPER */}
+          <View
+            style={{
+              flex: 1,
+              paddingHorizontal: 24,
+              justifyContent: "space-between",
+              paddingBottom: 20,
+            }}
+          >
+            {/* FORM + OAUTH */}
+            <View>
+              {/* ILLUSTRATION (smaller) */}
+              <View
+                style={[styles.illustrationContainer, { marginBottom: 24 }]}
               >
-                <Text style={styles.primaryButtonText}>
-                  {loadingEmail ? "Signing in..." : "Sign In"}
-                </Text>
-              </TouchableOpacity>
-              <Text style={styles.dividerText}>or</Text>
-            </View>
-
-            {/* GOOGLE OAUTH */}
-            <TouchableOpacity
-              style={styles.googleButton}
-              onPress={handleGoogleSignIn}
-              activeOpacity={0.9}
-            >
-              <View style={styles.googleIconContainer}>
-                <Ionicons name="logo-google" size={20} color="#1A1A1A" />
+                <Image
+                  source={require("../../assets/images/image1.png")}
+                  style={[
+                    styles.illustration,
+                    { width: 180, height: 180, maxHeight: 180 },
+                  ]}
+                  resizeMode="cover"
+                />
               </View>
-              <Text style={styles.googleButtonText}>Continue with Google</Text>
-            </TouchableOpacity>
+              <View style={styles.loginSection}>
+                {/* EMAIL LOGIN FORM */}
+                <View style={styles.formContainer}>
+                  <View>
+                    <Text style={[styles.inputLabel, { color: colors.text }]}>
+                      Email
+                    </Text>
+                    <TextInput
+                      autoCapitalize="none"
+                      keyboardType="email-address"
+                      value={email}
+                      onChangeText={setEmail}
+                      placeholder="you@example.com"
+                      placeholderTextColor={colors.grey}
+                      style={[
+                        styles.input,
+                        {
+                          backgroundColor: colors.cardBackground,
+                          color: colors.text,
+                        },
+                      ]}
+                      returnKeyType="next"
+                    />
+                    {errors.email && (
+                      <Text style={styles.errorText}>{errors.email}</Text>
+                    )}
+                  </View>
+                  <View>
+                    <Text style={[styles.inputLabel, { color: colors.text }]}>
+                      Password
+                    </Text>
+                    <View style={{ position: "relative" }}>
+                      <TextInput
+                        secureTextEntry={!showPassword}
+                        value={password}
+                        onChangeText={setPassword}
+                        placeholder="••••••"
+                        placeholderTextColor={colors.grey}
+                        style={[
+                          styles.input,
+                          {
+                            backgroundColor: colors.cardBackground,
+                            color: colors.text,
+                            paddingRight: 45,
+                          },
+                        ]}
+                        returnKeyType="done"
+                      />
+                      <TouchableOpacity
+                        onPress={() => setShowPassword(!showPassword)}
+                        style={{
+                          position: "absolute",
+                          right: 14,
+                          top: 14,
+                          padding: 4,
+                        }}
+                        activeOpacity={0.7}
+                      >
+                        <Feather
+                          name={showPassword ? "eye-off" : "eye"}
+                          size={18}
+                          color={colors.grey}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                    {errors.password && (
+                      <Text style={styles.errorText}>{errors.password}</Text>
+                    )}
+                  </View>
+                  {errors.general && (
+                    <Text style={styles.errorText}>{errors.general}</Text>
+                  )}
+                  <TouchableOpacity
+                    onPress={handleEmailLogin}
+                    disabled={loadingEmail}
+                    style={[
+                      styles.primaryButton,
+                      loadingEmail && styles.primaryButtonDisabled,
+                    ]}
+                    activeOpacity={0.85}
+                  >
+                    <Text style={styles.primaryButtonText}>
+                      {loadingEmail ? "Signing in..." : "Sign In"}
+                    </Text>
+                  </TouchableOpacity>
+                  <Text
+                    style={[
+                      styles.dividerText,
+                      { color: colors.textSecondary },
+                    ]}
+                  >
+                    or
+                  </Text>
+                </View>
 
-            <View style={styles.linkRow}>
-              <Text style={styles.termsText}>Don&apos;t have an account?</Text>
-              <TouchableOpacity onPress={() => router.push("/(auth)/register")}>
-                <Text style={styles.linkText}>Register</Text>
-              </TouchableOpacity>
+                {/* GOOGLE OAUTH */}
+                <TouchableOpacity
+                  style={[
+                    styles.googleButton,
+                    {
+                      backgroundColor:
+                        colors.surface === "#000000"
+                          ? "#FFFFFF"
+                          : colors.cardBackground,
+                    },
+                  ]}
+                  onPress={handleGoogleSignIn}
+                  activeOpacity={0.9}
+                >
+                  <View style={styles.googleIconContainer}>
+                    <Feather
+                      name="mail"
+                      size={20}
+                      color={
+                        colors.surface === "#000000" ? "#1A1A1A" : colors.text
+                      }
+                    />
+                  </View>
+                  <Text
+                    style={[
+                      styles.googleButtonText,
+                      {
+                        color:
+                          colors.surface === "#000000"
+                            ? "#1A1A1A"
+                            : colors.text,
+                      },
+                    ]}
+                  >
+                    Continue with Google
+                  </Text>
+                </TouchableOpacity>
+
+                <View style={styles.linkRow}>
+                  <Text
+                    style={[styles.termsText, { color: colors.textSecondary }]}
+                  >
+                    Don&apos;t have an account?
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => router.push("/(auth)/register")}
+                  >
+                    <Text style={styles.linkText}>Register</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
             </View>
-            {/* <Text style={[styles.termsText, { marginTop: 16 }]}>
-              By continuing, you agree to our Terms and Privacy Policy
-            </Text> */}
           </View>
-        </View>
-      </View>
-    </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </View>
   );
 }

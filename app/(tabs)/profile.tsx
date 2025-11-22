@@ -1,7 +1,7 @@
 import { useTheme } from "@/contexts/ThemeContext";
-import { homeStyles } from "@/styles/home.styles";
+import { useDynamicStyles } from "@/hooks/useDynamicStyles";
 import { useAuth, useUser } from "@clerk/clerk-expo";
-import { Ionicons } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 import React from "react";
 import { Switch, Text, TouchableOpacity, View } from "react-native";
 
@@ -9,6 +9,7 @@ export default function Profile() {
   const { user } = useUser();
   const { signOut } = useAuth();
   const { colors, toggleTheme, isDark } = useTheme();
+  const homeStyles = useDynamicStyles();
 
   const deriveNameFromEmail = (email?: string | null) => {
     if (!email) return undefined;
@@ -53,8 +54,8 @@ export default function Profile() {
           activeOpacity={0.7}
         >
           <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
-            <Ionicons
-              name={isDark ? "moon" : "sunny"}
+            <Feather
+              name={isDark ? "moon" : "sun"}
               size={20}
               color={colors.primary}
             />

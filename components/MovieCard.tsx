@@ -3,7 +3,7 @@ import { useDynamicStyles } from "@/hooks/useDynamicStyles";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { toggleFavorite } from "@/store/moviesSlice";
 import type { MovieItem } from "@/types/movies";
-import { Ionicons } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 import React from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 
@@ -75,10 +75,11 @@ const MovieCard: React.FC<Props> = ({ item, onPress }) => {
         }}
         activeOpacity={0.7}
       >
-        <Ionicons
-          name={isFav ? "heart" : "heart-outline"}
+        <Feather
+          name={isFav ? "heart" : "heart"}
           size={20}
           color={isFav ? "#EF4444" : "#FFF"}
+          fill={isFav ? "#EF4444" : "none"}
         />
       </TouchableOpacity>
       <View style={homeStyles.cardBody}>

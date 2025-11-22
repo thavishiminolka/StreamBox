@@ -44,7 +44,7 @@ export const useDynamicStyles = () => {
       justifyContent: "center",
     },
     avatarText: {
-      color: colors.background,
+      color: colors.avatarTextColor,
       fontWeight: "700",
       fontSize: 16,
     },
@@ -103,7 +103,7 @@ export const useDynamicStyles = () => {
     chipText: {
       fontSize: 11,
       fontWeight: "600",
-      color: colors.background,
+      color: colors.chipTextColor,
       letterSpacing: 0.5,
     },
     statusUpcoming: {
