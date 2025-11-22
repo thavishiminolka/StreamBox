@@ -28,8 +28,7 @@ export default function Profile() {
     <View style={homeStyles.container}>
       <View style={homeStyles.headerRow}>
         <View>
-          <Text style={homeStyles.greeting}>{displayName}</Text>
-          <Text style={homeStyles.subGreeting}>Profile</Text>
+          <Text style={homeStyles.greeting}>Profile</Text>
         </View>
         <View style={homeStyles.avatar}>
           <Text style={homeStyles.avatarText}>{avatarInitial}</Text>
@@ -65,21 +64,7 @@ export default function Profile() {
           >
             Username
           </Text>
-          <Text style={{ color: COLORS.grey }}>{user?.username || "N/A"}</Text>
-        </View>
-        <View
-          style={{ backgroundColor: "#111", padding: 16, borderRadius: 16 }}
-        >
-          <Text
-            style={{
-              color: COLORS.surface,
-              fontWeight: "600",
-              marginBottom: 4,
-            }}
-          >
-            ID
-          </Text>
-          <Text style={{ color: COLORS.grey, fontSize: 12 }}>{user?.id}</Text>
+          <Text style={{ color: COLORS.grey }}>{displayName}</Text>
         </View>
         <Text
           onPress={() => signOut()}

@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from "@/store";
 import { toggleFavorite } from "@/store/moviesSlice";
 import { homeStyles } from "@/styles/home.styles";
 import type { MovieItem } from "@/types/movies";
+import { useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import React from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
@@ -10,10 +11,28 @@ import { FlatList, Text, TouchableOpacity, View } from "react-native";
 export default function Favorites() {
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const { user } = useUser();
   const favorites = useAppSelector((s) => s.movies.favorites);
   const movies = useAppSelector((s) =>
     s.movies.trending.filter((m: MovieItem) => favorites.includes(m.id))
   );
+
+  const deriveNameFromEmail = (email?: string | null) => {
+    if (!email) return undefined;
+    const local = email.split("@")[0];
+    if (!local) return undefined;
+    const parts = local.split(/[._-]+/).filter(Boolean);
+    const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+    if (!parts.length) return cap(local);
+    return parts.map(cap).join(" ");
+  };
+
+  const displayName =
+    user?.firstName ||
+    user?.username ||
+    deriveNameFromEmail(user?.primaryEmailAddress?.emailAddress) ||
+    "Guest";
+  const avatarInitial = displayName.charAt(0).toUpperCase();
 
   const goToDetails = (id: number) =>
     router.push({ pathname: "/details/[id]", params: { id: String(id) } });
@@ -53,16 +72,18 @@ export default function Favorites() {
 
   return (
     <View style={homeStyles.container}>
-      <Text
-        style={{
-          color: "#fff",
-          fontSize: 20,
-          fontWeight: "700",
-          marginBottom: 16,
-        }}
-      >
-        Favorites ({favorites.length})
-      </Text>
+      <View style={homeStyles.headerRow}>
+        <View>
+          <Text style={homeStyles.greeting}>Favorites</Text>
+        </View>
+        <TouchableOpacity
+          style={homeStyles.avatar}
+          onPress={() => router.push("/(tabs)/profile")}
+          activeOpacity={0.7}
+        >
+          <Text style={homeStyles.avatarText}>{avatarInitial}</Text>
+        </TouchableOpacity>
+      </View>
       <FlatList
         data={movies}
         keyExtractor={(m) => m.id.toString()}

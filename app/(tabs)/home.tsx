@@ -1,4 +1,3 @@
-import MovieCard from "@/components/MovieCard";
 import { COLORS } from "@/constants/theme";
 import { credentialsPresent, getTrendingMovies } from "@/lib/tmdb";
 import { useAppDispatch, useAppSelector } from "@/store";
@@ -13,7 +12,14 @@ import type { MovieItem } from "@/types/movies";
 import { useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import React, { useCallback, useEffect } from "react";
-import { FlatList, RefreshControl, Text, View } from "react-native";
+import {
+  FlatList,
+  RefreshControl,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import MovieCard from "../../components/MovieCard";
 
 const HomeScreen = () => {
   const { user } = useUser();
@@ -42,7 +48,7 @@ const HomeScreen = () => {
     } finally {
       setRefreshing(false);
     }
-  }, [dispatch]);
+  }, []);
 
   useEffect(() => {
     fetchMovies();
@@ -84,12 +90,16 @@ const HomeScreen = () => {
       <View style={homeStyles.header}>
         <View style={homeStyles.headerRow}>
           <View>
-            <Text style={homeStyles.greeting}>Hi {displayName}!</Text>
+            <Text style={homeStyles.greeting}>Hi {displayName}</Text>
             <Text style={homeStyles.subGreeting}>Welcome to StreamBox</Text>
           </View>
-          <View style={homeStyles.avatar}>
+          <TouchableOpacity
+            style={homeStyles.avatar}
+            onPress={() => router.push("/(tabs)/profile")}
+            activeOpacity={0.7}
+          >
             <Text style={homeStyles.avatarText}>{avatarInitial}</Text>
-          </View>
+          </TouchableOpacity>
         </View>
       </View>
 
