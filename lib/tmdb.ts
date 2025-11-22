@@ -1,4 +1,4 @@
-import { MovieItem } from "@/app/components/MovieCard";
+import { MovieItem } from "@/types/movies";
 
 const TMDB_BASE = "https://api.themoviedb.org/3";
 
@@ -48,4 +48,14 @@ export function credentialsPresent(): boolean {
       process.env.EXPO_PUBLIC_TMDB_ACCESS_TOKEN ||
       process.env.EXPO_PUBLIC_TMDB_API_KEY
   );
+}
+
+export async function getMovieDetails(
+  id: number,
+  language: string = "en-US"
+): Promise<MovieItem> {
+  const endpoint = withApiKey(`${TMDB_BASE}/movie/${id}?language=${language}`);
+  const res = await fetch(endpoint, { headers: buildHeaders() });
+  if (!res.ok) throw new Error(`TMDb detail error ${res.status}`);
+  return await res.json();
 }

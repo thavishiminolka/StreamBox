@@ -1,21 +1,32 @@
 import { COLORS } from "@/constants/theme";
 import { credentialsPresent, getTrendingMovies } from "@/lib/tmdb";
+import { useAppDispatch, useAppSelector } from "@/store";
+import {
+  selectMovie,
+  setError,
+  setStatus,
+  setTrending,
+} from "@/store/moviesSlice";
 import { homeStyles } from "@/styles/home.styles";
+import type { MovieItem } from "@/types/movies";
 import { useUser } from "@clerk/clerk-expo";
-import React, { useCallback, useEffect, useState } from "react";
+import { useRouter } from "expo-router";
+import React, { useCallback, useEffect } from "react";
 import { FlatList, RefreshControl, Text, View } from "react-native";
-import MovieCard, { MovieItem } from "../components/MovieCard";
+import MovieCard from "../../components/MovieCard";
 
 const HomeScreen = () => {
   const { user } = useUser();
-  const [movies, setMovies] = useState<MovieItem[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [refreshing, setRefreshing] = useState(false);
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+  const movies = useAppSelector((s) => s.movies.trending);
+  const loading = useAppSelector((s) => s.movies.status === "loading");
+  const error = useAppSelector((s) => s.movies.error);
+  const [refreshing, setRefreshing] = React.useState(false);
 
   const fetchMovies = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+    dispatch(setStatus("loading"));
+    dispatch(setError(undefined));
     try {
       if (!credentialsPresent()) {
         throw new Error(
@@ -23,11 +34,12 @@ const HomeScreen = () => {
         );
       }
       const results = await getTrendingMovies();
-      setMovies(results);
+      dispatch(setTrending(results));
+      dispatch(setStatus("idle"));
     } catch (e: any) {
-      setError(e.message || "Failed to load movies");
+      dispatch(setError(e.message || "Failed to load movies"));
+      dispatch(setStatus("error"));
     } finally {
-      setLoading(false);
       setRefreshing(false);
     }
   }, []);
@@ -41,8 +53,13 @@ const HomeScreen = () => {
     fetchMovies();
   };
 
+  const handleSelect = (item: MovieItem) => {
+    dispatch(selectMovie(item.id));
+    router.push({ pathname: "/details/[id]", params: { id: String(item.id) } });
+  };
+
   const renderItem = ({ item }: { item: MovieItem }) => (
-    <MovieCard item={item} />
+    <MovieCard item={item} onPress={handleSelect} />
   );
 
   const deriveNameFromEmail = (email?: string | null) => {
