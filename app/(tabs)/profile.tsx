@@ -124,17 +124,28 @@ export default function Profile() {
           </Text>
           <Text style={{ color: colors.textSecondary }}>{displayName}</Text>
         </View>
-        <Text
+        <TouchableOpacity
           onPress={() => signOut()}
           style={{
-            color: colors.primary,
-            fontWeight: "700",
-            textAlign: "center",
+            backgroundColor: "#EF4444",
+            paddingVertical: 14,
+            paddingHorizontal: 24,
+            borderRadius: 12,
+            alignItems: "center",
             marginTop: 20,
           }}
+          activeOpacity={0.8}
         >
-          Sign Out
-        </Text>
+          <Text
+            style={{
+              color: "#000000",
+              fontWeight: "700",
+              fontSize: 16,
+            }}
+          >
+            Sign Out
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );

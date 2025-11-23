@@ -15,17 +15,17 @@ export const DARK_COLORS = {
 } as const;
 
 export const LIGHT_COLORS = {
-  primary: "#047857",
+  primary: "#058f68ff",
   secondary: "#14B8A6",
-  background: "#b3b3b3ff",
+  background: "#8f8d8dff",
   surface: "#000000",
   surfaceLight: "#938e8eff",
   white: "#000000",
-  grey: "#6B7280",
-  cardBackground: "#afaaaaff",
+  grey: "#1F2937",
+  cardBackground: "#938e8eff",
   text: "#000000",
   textSecondary: "#29292aff",
-  tabBarBackground: "#afaaaaff",
+  tabBarBackground: "#9b9797ff",
   chipTextColor: "#000000",
   avatarTextColor: "#000000",
 } as const;
