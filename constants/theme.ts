@@ -19,7 +19,7 @@ export const LIGHT_COLORS = {
   secondary: "#14B8A6",
   background: "#8f8d8dff",
   surface: "#000000",
-  surfaceLight: "#938e8eff",
+  surfaceLight: "#525151ff",
   white: "#000000",
   grey: "#1F2937",
   cardBackground: "#938e8eff",
